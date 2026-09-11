@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Révisions">
+<meta name="theme-color" content="#080c10">
+<title>Révisions</title>
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+  --ink:#ffffff; --panel:#f5f5f5; --panel2:#efefef; --line:#d0d0d0;
+  --text:#1a1a1a; --muted:#666666; --mint:#00a86b; --coral:#e74c3c;
+  --amber:#f39c12; --sky:#3498db;
+  color-scheme: light;
+}
+html { background:#ffffff; }
+html, body { margin:0; background:var(--ink); color:var(--text); }
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased; min-height:100vh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.wrap { max-width:680px; margin:0 auto; padding:20px 16px 64px; }
+.serif { font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; }
+h1 { font-size:21px; font-weight:600; margin:0; letter-spacing:-.01em; }
+h2 { font-size:15px; font-weight:600; margin:0; }
+p { margin:0; }
+button { font:inherit; color:inherit; cursor:pointer; border:none; background:none; }
+button:focus-visible, textarea:focus-visible, input:focus-visible { outline:2px solid var(--sky); outline-offset:2px; }
+.head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.sub { color:var(--muted); font-size:13px; }
+.hero { border:1px solid var(--line); border-radius:16px; padding:18px;
+  background:linear-gradient(160deg,#f0f8f5 0%,#ffffff 70%); margin-bottom:14px; }
+.count { font-size:46px; line-height:1; font-weight:600; letter-spacing:-.03em; }
+.unit { font-size:15px; color:var(--muted); margin-left:8px; }
+.btn { display:inline-flex; align-items:center; gap:7px; justify-content:center; padding:9px 14px;
+  border-radius:10px; background:var(--panel2); border:1px solid var(--line); font-size:13.5px;
+  font-weight:500; transition:background .15s ease, transform .1s ease; }
+.btn:active { transform:scale(.985); }
+.btn.primary { background:var(--mint); color:#06231a; border-color:var(--mint); font-weight:600; }
+.btn.ghost { background:transparent; }
+.btn.sm { padding:6px 10px; font-size:12.5px; border-radius:8px; }
+.btn[disabled] { opacity:.4; pointer-events:none; }
+.btn.wide { width:100%; }
+.row { display:flex; gap:8px; flex-wrap:wrap; }
+.node { border:1px solid var(--line); border-radius:12px; background:var(--panel); margin-bottom:8px; overflow:hidden; }
+.node-main { display:flex; align-items:center; gap:10px; padding:12px; width:100%; text-align:left; }
+.chev { color:var(--muted); font-size:18px; line-height:1; transition:transform .18s ease; display:inline-block; width:12px; }
+.chev.open { transform:rotate(90deg); }
+.node-name { flex:1; min-width:0; }
+.name { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.meta { font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px; margin-top:2px; }
+.dot { width:7px; height:7px; border-radius:50%; background:var(--coral); display:inline-block; flex:none; }
+.badge { font-size:11.5px; padding:2px 7px; border-radius:999px; background:rgba(226,171,79,.14); color:var(--amber); flex:none; }
+.actions { display:flex; gap:6px; flex-wrap:wrap; padding:0 12px 12px; }
+.sep { width:100%; height:1px; background:var(--line); margin:2px 0 4px; }
+.kids { padding-left:14px; border-left:1px solid var(--line); margin:0 0 8px 22px; }
+.progress { height:3px; background:var(--line); border-radius:999px; overflow:hidden; margin-bottom:22px; }
+.progress i { display:block; height:100%; background:var(--sky); transition:width .3s ease; }
+.question { font-size:20px; line-height:1.4; margin-bottom:20px; }
+.kind { font-size:11.5px; color:var(--muted); border:1px solid var(--line); border-radius:6px; padding:2px 7px; }
+.choice { display:flex; gap:11px; align-items:flex-start; width:100%; text-align:left; padding:13px 14px;
+  border-radius:12px; border:1px solid var(--line); background:var(--panel); margin-bottom:9px; transition:all .15s ease; }
+.key { flex:none; width:22px; height:22px; border-radius:6px; background:var(--panel2); font-size:12px;
+  display:flex; align-items:center; justify-content:center; color:var(--muted); margin-top:1px; }
+.choice.right { border-color:var(--mint); background:rgba(63,217,164,.1); }
+.choice.right .key { background:var(--mint); color:#06231a; }
+.choice.wrong { border-color:var(--coral); background:rgba(242,99,126,.1); }
+.choice.wrong .key { background:var(--coral); color:#2a0710; }
+.choice.dim { opacity:.42; }
+.feedback { border-radius:12px; padding:14px; margin:16px 0 4px; border:1px solid var(--line); background:var(--panel); }
+.verdict { font-weight:600; font-size:14px; margin-bottom:6px; }
+.explain { color:#c3d0da; font-size:14.5px; line-height:1.55; }
+.verso { font-size:17px; line-height:1.5; margin-bottom:8px; }
+.slide { display:inline-block; margin-top:10px; font-size:12px; color:var(--sky);
+  border:1px solid rgba(111,178,232,.3); border-radius:7px; padding:3px 8px; }
+.grades { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; margin-top:16px; }
+.grade { padding:10px 4px; border-radius:10px; border:1px solid var(--line); background:var(--panel2);
+  text-align:center; font-size:12.5px; font-weight:500; }
+.grade small { display:block; color:var(--muted); font-size:11px; font-weight:400; margin-top:2px; }
+.grade.suggest { border-color:var(--coral); }
+.rc { border:1px solid var(--line); border-radius:12px; background:var(--panel); padding:14px; margin-bottom:8px; }
+.rc .q { font-size:17px; line-height:1.4; margin-bottom:10px; }
+.line { font-size:14px; color:var(--muted); padding:2px 0 2px 18px; position:relative; }
+.line.good { color:var(--mint); }
+.line.good:before { content:"✓"; position:absolute; left:0; }
+.rc-foot { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:10px; }
+.modal-bg { position:fixed; inset:0; background:rgba(4,7,10,.72); display:flex; align-items:flex-end;
+  justify-content:center; z-index:50; }
+.modal { background:var(--panel); border:1px solid var(--line); border-radius:16px 16px 0 0; padding:18px;
+  width:100%; max-width:680px; max-height:88vh; overflow-y:auto; padding-bottom:calc(18px + env(safe-area-inset-bottom)); }
+@media (min-width:700px){ .modal-bg{ align-items:center; padding:20px; } .modal{ border-radius:16px; } }
+.tabs { display:flex; gap:4px; background:var(--panel); border:1px solid var(--line); border-radius:11px; padding:4px; margin-bottom:14px; }
+.tabs button { flex:1; padding:7px 4px; border-radius:8px; font-size:13px; color:var(--muted); }
+.tabs button.on { background:var(--panel2); color:var(--text); font-weight:600; }
+.ta { width:100%; min-height:90px; background:#fafafa; color:var(--text); border:1px solid var(--line);
+  border-radius:10px; padding:11px; font-size:15px; resize:vertical; font-family:inherit; }
+.ta.mono { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px; min-height:150px; }
+.inp { width:100%; background:#fafafa; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:11px; font-size:16px; }
+.field { margin-bottom:10px; }
+.field label { display:block; font-size:12.5px; color:var(--muted); margin-bottom:4px; }
+.opt { display:flex; align-items:center; gap:9px; margin-bottom:7px; }
+.opt input[type=radio] { accent-color:var(--mint); width:18px; height:18px; flex:none; }
+.tabbar { display:flex; gap:6px; overflow-x:auto; padding:2px 0 8px; margin-bottom:12px; -webkit-overflow-scrolling:touch; }
+.tabbar::-webkit-scrollbar { display:none; }
+.tabbar button { flex:none; white-space:nowrap; padding:7px 13px; border-radius:999px; border:1px solid var(--line);
+  background:var(--panel); font-size:13px; color:var(--muted); }
+.tabbar button.on { background:var(--text); color:var(--ink); border-color:var(--text); font-weight:600; }
+.empty { color:var(--muted); font-size:14px; padding:22px 4px; text-align:center; }
+.err { color:var(--coral); font-size:13px; margin:8px 0 12px; }
+.cand { border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:8px; }
+.cand label { display:flex; gap:10px; align-items:flex-start; cursor:pointer; }
+.cand input { margin-top:4px; accent-color:var(--mint); width:17px; height:17px; flex:none; }
+.spin { width:16px; height:16px; border-radius:50%; border:2px solid var(--line); border-top-color:var(--sky);
+  display:inline-block; animation:spin .7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.foot { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:26px; font-size:12.5px; color:var(--muted); }
+.foot button { color:var(--muted); text-decoration:underline; text-underline-offset:3px; }
+.hint { text-align:center; color:var(--muted); font-size:11.5px; margin-top:14px; }
+@media (prefers-reduced-motion: reduce){ * { transition:none !important; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<input type="file" id="file" accept=".json,application/json" hidden>
+<input type="file" id="genfile" accept=".pdf,image/*" hidden>
+<script>
+/* ---------------- Stockage ---------------- */
+var KEY = "revision_qcm_v2";
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+function load(){ try { var r = localStorage.getItem(KEY); return r ? JSON.parse(r) : null; } catch(e){ return null; } }
+
+/* ---------------- Répétition espacée ---------------- */
+var DAY = 86400000;
+function uid(){ return Math.random().toString(36).slice(2,10); }
+function todayStart(){ var d = new Date(); d.setHours(0,0,0,0); return d.getTime(); }
+function fresh(){ return { interval:0, ease:2.5, reps:0, lapses:0, flop:false, due:todayStart(), seen:false, type:"qcm" }; }
+
+function applyGrade(card, grade, wasWrong){
+  var interval = card.interval||0, ease = card.ease||2.5, reps = card.reps||0, lapses = card.lapses||0;
+  var flop = !!card.flop;
+  var relearn = reps === 0 && lapses > 0;
+
+  if (grade === "fail"){
+    lapses += 1; reps = 0; ease = Math.max(1.3, ease - 0.2);
+    interval = 0; flop = true;
+  } else if (grade === "hard"){
+    ease = Math.max(1.3, ease - 0.15);
+    interval = reps === 0 ? 1 : Math.max(interval + 1, Math.round(interval * 1.2));
+    reps += 1;
+  } else if (grade === "good"){
+    interval = reps === 0 ? (relearn ? 1 : 2) : Math.round(interval * ease);
+    reps += 1; if (!wasWrong) flop = false;
+  } else {
+    ease = Math.min(3.4, ease + 0.15);
+    interval = reps === 0 ? (relearn ? 3 : 4) : Math.round(interval * ease * 1.35);
+    reps += 1; if (!wasWrong) flop = false;
+  }
+  if (wasWrong) flop = true;
+  interval = Math.max(0, interval);
+  interval = getAdjustedInterval(interval);
+
+  var out = {}; for (var k in card) out[k] = card[k];
+  out.interval = interval; out.ease = ease; out.reps = reps; out.lapses = lapses;
+  out.flop = flop; out.seen = true; out.due = todayStart() + interval * DAY;
+  return out;
+}
+function fmtDays(d){
+  if (d <= 0) return "30 s";
+  if (d === 1) return "demain";
+  if (d < 30) return d + " j";
+  return Math.round(d/30) + " mois";
+}
+function isDue(c){ return (c.due||0) <= todayStart(); }
+function kindOf(c){ return c.type === "flash" ? "flash" : "qcm"; }
+function dueLabel(c){
+  if (!c.seen) return "jamais vue";
+  if (isDue(c)) return "à revoir aujourd'hui";
+  var days = Math.round(((c.due||0) - todayStart()) / DAY);
+  return "à revoir dans " + days + " j";
+}
+function daysUntilExam(){
+  if (!S.examDate) return 999;
+  var days = Math.round(((S.examDate||0) - todayStart()) / DAY);
+  return Math.max(0, days);
+}
+function examProgressFactor(){
+  var d = daysUntilExam();
+  if (d > 30) return 1.0;     // 30+ jours : algo normal
+  if (d > 15) return 0.8;     // 15-30 jours : réduit à 80%
+  if (d > 7) return 0.6;      // 7-15 jours : réduit à 60%
+  if (d > 3) return 0.4;      // 3-7 jours : réduit à 40%
+  return 0.3;                 // < 3 jours : réduit à 30%
+}
+function getAdjustedInterval(baseInterval){
+  return Math.max(0, Math.round(baseInterval * examProgressFactor()));
+}
+var GRADES = [
+  { key:"fail", label:"Échec" }, { key:"hard", label:"Difficile" },
+  { key:"good", label:"Bon" },   { key:"easy", label:"Facile" }
+];
+
+/* ---------------- Dossiers ---------------- */
+function descendants(id){
+  var out = [id], stack = [id];
+  while (stack.length){
+    var cur = stack.pop();
+    S.folders.forEach(function(f){ if (f.parentId === cur){ out.push(f.id); stack.push(f.id); } });
+  }
+  return out;
+}
+function cardsIn(id){
+  var set = {}; descendants(id).forEach(function(i){ set[i] = 1; });
+  return S.cards.filter(function(c){ return set[c.folderId]; });
+}
+function ofKind(list, k){ return k === "all" ? list : list.filter(function(c){ return kindOf(c) === k; }); }
+function folderById(id){ for (var i=0;i<S.folders.length;i++) if (S.folders[i].id === id) return S.folders[i]; }
+function ensurePath(path, parentId){
+  var parts = String(path).split(/[\/>]/).map(function(s){ return s.trim(); }).filter(Boolean);
+  var cur = parentId || null;
+  parts.forEach(function(part){
+    var found = null;
+    S.folders.forEach(function(f){
+      if (f.parentId === cur && f.name.toLowerCase() === part.toLowerCase()) found = f;
+    });
+    if (!found){ found = { id:uid(), name:part, parentId:cur }; S.folders.push(found); }
+    cur = found.id;
+  });
+  return cur;
+}
+
+/* ---------------- Import JSON ---------------- */
+function pick(o, keys){ for (var i=0;i<keys.length;i++){ var v = o[keys[i]]; if (v !== undefined && v !== null && v !== "") return v; } }
+function normalizeQ(raw){
+  if (!raw || typeof raw !== "object") return null;
+  var q = pick(raw, ["question","q","enonce","énoncé","recto","intitule","text"]);
+  if (!q) return null;
+  var ch = pick(raw, ["reponses","réponses","choix","options","propositions","answers"]);
+  var card = fresh();
+  card.id = uid(); card.question = String(q);
+  var ex = pick(raw, ["explication","explanation","justification","pourquoi","correction"]);
+  var sl = pick(raw, ["diapo","diapositive","slide","page","source"]);
+  card.explanation = ex ? String(ex) : "";
+  card.slide = sl !== undefined ? String(sl) : "";
+
+  if (Array.isArray(ch) && ch.length >= 2){
+    var list = ch.map(String);
+    var raw1 = pick(raw, ["correctes","multiples","bonnesReponses","correctIndexes"]);
+    var raw2 = pick(raw, ["correcte","correct","bonneReponse","bonne_reponse","answer","reponse","réponse","correctIndex"]);
+    var multiSrc = Array.isArray(raw1) ? raw1 : (Array.isArray(raw2) ? raw2 : null);
+    var perOptionEx = pick(raw, ["explications","explicationsParOption","optionExplications"]);
+    function toIdx(v){
+      if (typeof v === "string"){
+        var t = v.trim();
+        if (/^[A-Ea-e]$/.test(t)) return t.toUpperCase().charCodeAt(0) - 65;
+        var found = list.findIndex(function(c){ return c.trim().toLowerCase() === t.toLowerCase(); });
+        return found >= 0 ? found : Number(t);
+      }
+      return Number(v);
+    }
+    if (multiSrc){
+      var idxs = multiSrc.map(toIdx).filter(function(n){ return n >= 0 && n < list.length; });
+      if (idxs.length > 1){
+        card.type = "qcm"; card.choices = list; card.answers = idxs;
+        if (Array.isArray(perOptionEx)) card.optionExplain = perOptionEx.map(String);
+        return card;
+      }
+      // un seul index valide dans le tableau : traiter comme réponse unique
+      card.type = "qcm"; card.choices = list; card.answer = idxs.length ? idxs[0] : 0;
+      if (Array.isArray(perOptionEx)) card.optionExplain = perOptionEx.map(String);
+      return card;
+    }
+    var a = toIdx(raw2);
+    a = Number(a); if (!(a >= 0 && a < list.length)) a = 0;
+    card.type = "qcm"; card.choices = list; card.answer = a;
+    if (Array.isArray(perOptionEx)) card.optionExplain = perOptionEx.map(String);
+    return card;
+  }
+  var verso = pick(raw, ["reponse","réponse","verso","answer","back","definition","dos"]);
+  if (verso){ card.type = "flash"; card.answerText = String(verso); return card; }
+  return null;
+}
+function doImport(text, targetId){
+  var raw = JSON.parse(text);
+  var blocks = Array.isArray(raw) ? [{ questions: raw }] : (Array.isArray(raw.dossiers) ? raw.dossiers : [raw]);
+  var added = 0;
+  blocks.forEach(function(block){
+    var list = Array.isArray(block) ? block : (block.questions || block.qcm || block.cards || block.flashcards || []);
+    var path = (block && !Array.isArray(block)) ? pick(block, ["dossier","folder","chemin","titre","title"]) : null;
+    var folderId = targetId || null;
+    if (path) folderId = ensurePath(path, targetId || null);
+    if (!folderId) folderId = ensurePath("Import", null);
+    list.forEach(function(q){
+      var c = normalizeQ(q);
+      if (c){ c.folderId = folderId; S.cards.push(c); added++; }
+    });
+  });
+  if (!added) throw new Error("Aucune carte exploitable dans ce fichier.");
+  return added;
+}
+
+/* ---------------- Données de départ ---------------- */
+function defaultExamDate(){
+  var now = new Date();
+  var d = new Date(now.getFullYear(), 10, 15); // 15 novembre
+  d.setHours(0,0,0,0);
+  if (d.getTime() < todayStart()) d = new Date(now.getFullYear() + 1, 10, 15);
+  return d.getTime();
+}
+var MONTHS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+function fmtDate(ts){
+  var d = new Date(ts);
+  return d.getDate() + " " + MONTHS[d.getMonth()] + " " + d.getFullYear();
+}
+
+function seed(){
+  var bio = { id:uid(), name:"Biologie cellulaire", parentId:null };
+  var viro = { id:uid(), name:"Virologie moléculaire", parentId:bio.id };
+  var bch = { id:uid(), name:"Biochimie", parentId:null };
+  function mk(folderId, question, choices, answer, explanation, slide){
+    var c = fresh(); c.id = uid(); c.folderId = folderId; c.question = question;
+    c.choices = choices; c.answer = answer; c.explanation = explanation; c.slide = slide; return c;
+  }
+  function fc(folderId, recto, verso, slide){
+    var c = fresh(); c.id = uid(); c.folderId = folderId; c.type = "flash";
+    c.question = recto; c.answerText = verso; c.slide = slide; c.explanation = ""; return c;
+  }
+  function mkMulti(folderId, question, choices, answers, explanation, slide, optionExplain){
+    var c = fresh(); c.id = uid(); c.folderId = folderId; c.question = question;
+    c.choices = choices; c.answers = answers; c.explanation = explanation; c.slide = slide;
+    if (optionExplain) c.optionExplain = optionExplain;
+    return c;
+  }
+  return {
+    examDate: defaultExamDate(),
+    folders: [bio, viro, bch],
+    cards: [
+      mk(viro.id, "Chez un rétrovirus, quel est le rôle des LTR de l'ADN proviral ?",
+        ["Coder la protéase virale","Servir de promoteur et de site d'intégration","Encapsider l'ARN génomique","Inhiber la transcriptase inverse"], 1,
+        "Les LTR sont non codants : générés pendant la rétrotranscription, ils portent le promoteur U3 et les extrémités reconnues par l'intégrase.", "14"),
+      mk(viro.id, "Pourquoi la transcriptase inverse génère-t-elle autant de variants viraux ?",
+        ["Elle copie l'ARN deux fois","Elle n'a pas d'activité exonucléase correctrice","Elle recrute une ADN polymérase fautive","Elle fonctionne sans amorce"], 1,
+        "Pas de relecture 3' vers 5' : environ une erreur toutes les 10 000 bases, d'où les quasi-espèces et l'échappement thérapeutique.", "11"),
+      mk(viro.id, "Quelle enzyme virale est la cible du raltégravir ?",
+        ["Protéase","Intégrase","Transcriptase inverse","Neuraminidase"], 1,
+        "Il bloque le transfert de brin catalysé par l'intégrase : l'ADN viral reste épisomal et n'est pas transmis aux cellules filles.", "22"),
+      fc(viro.id, "Quasi-espèce virale",
+        "Population de génomes viraux apparentés mais non identiques, issue de l'infidélité de la polymérase : c'est le réservoir de variants qui permet l'échappement.", "12"),
+      mk(bio.id, "Pourquoi l'ADN mitochondrial est-il transmis uniquement par la mère ?",
+        ["Il est absent du spermatozoïde","Les mitochondries paternelles sont dégradées après la fécondation","Il est inactivé par méthylation","Il migre vers le globule polaire"], 1,
+        "Le spermatozoïde apporte des mitochondries, mais elles sont ubiquitinylées puis détruites par autophagie dans le zygote.", "7"),
+      mk(bio.id, "Quelle jonction assure l'étanchéité d'un épithélium ?",
+        ["Desmosome","Jonction serrée","Jonction gap","Hémidesmosome"], 1,
+        "Claudines et occludines scellent l'espace intercellulaire : barrière paracellulaire et polarité apico-basale.", "31"),
+      fc(bio.id, "Trois fonctions du réticulum endoplasmique lisse",
+        "Synthèse des lipides et des stéroïdes, détoxification par les cytochromes P450, stockage et libération du calcium.", "9"),
+      mk(bch.id, "Que traduit un Km faible pour une enzyme ?",
+        ["Une vitesse maximale élevée","Une forte affinité pour le substrat","Une inhibition compétitive","Une coopérativité positive"], 1,
+        "Km est la concentration de substrat donnant Vmax/2 : plus il est bas, moins il faut de substrat pour saturer, donc plus l'affinité est grande.", "5"),
+      mk(bch.id, "Qu'est-ce qui fait tourner l'ATP synthase mitochondriale ?",
+        ["L'hydrolyse du NADH","Le gradient électrochimique de protons","Le transport d'électrons par le cytochrome c","La phosphorylation du substrat"], 1,
+        "La force proton-motrice créée par la chaîne respiratoire fait tourner le rotor c : l'énergie est mécanique avant d'être chimique.", "18"),
+      mkMulti(viro.id, "Parmi ces propositions, lesquelles sont vraies pour la transcriptase inverse ?",
+        ["Elle n'a pas d'activité correctrice", "Elle synthétise de l'ADN à partir d'ARN", "Elle est la cible du raltégravir", "Elle catalyse aussi l'intégration dans le génome"],
+        [0, 1],
+        "Deux affirmations vraies : l'absence de relecture explique le taux d'erreur élevé, et son rôle est bien de rétrotranscrire l'ARN viral en ADN.", "11",
+        ["Vrai : pas de domaine exonucléase 3'→5', d'où le taux de mutation élevé.",
+         "Vrai : c'est sa fonction même, ARN viral → ADN proviral.",
+         "Faux : c'est l'intégrase qui est ciblée par le raltégravir, pas la transcriptase inverse.",
+         "Faux : l'intégration est catalysée par une enzyme distincte, l'intégrase."]),
+      mkMulti(bio.id, "Quelles structures participent à la jonction serrée (tight junction) ?",
+        ["Claudines", "Occludines", "Cadhérines", "Connexines"],
+        [0, 1],
+        "Claudines et occludines forment le maillage transmembranaire des jonctions serrées ; cadhérines et connexines appartiennent à d'autres types de jonctions.", "31",
+        ["Vrai : protéine transmembranaire clé de l'étanchéité paracellulaire.",
+         "Vrai : renforce le scellement, associée aux claudines.",
+         "Faux : les cadhérines forment les jonctions adhérentes, pas serrées.",
+         "Faux : les connexines forment les jonctions gap (communicantes)."])
+    ]
+  };
+}
+
+/* ---------------- État ---------------- */
+var S = load() || seed();
+if (!S.examDate || S.examDate < todayStart()) S.examDate = defaultExamDate();
+var UI = { open:{}, session:null, modal:null, reading:null, browse:null, browseFolder:null };
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); }
+function byId(id){ for (var i=0;i<S.cards.length;i++) if (S.cards[i].id === id) return S.cards[i]; }
+function shuffle(a){ a = a.slice(); for (var i=a.length-1;i>0;i--){ var j = Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function startSession(list, title, keepOrder){
+  if (!list.length) return;
+  var ordered = keepOrder ? list : shuffle(list);
+  UI.session = { ids: ordered.map(function(c){ return c.id; }), idx:0, sel:null, missed:[], right:0, title:title };
+  UI.reading = null;
+  UI.browse = null;
+  render();
+}
+
+/* ---------------- Rendu ---------------- */
+var SAMPLE = '{\n  "dossier": "Virologie moléculaire / Rétrovirus",\n  "questions": [\n    {\n      "question": "Quel est le rôle des LTR ?",\n      "reponses": ["Coder la protéase", "Promoteur et site d\'intégration", "Encapsider l\'ARN"],\n      "correcte": 1,\n      "explication": "Non codants : promoteur U3 + extrémités reconnues par l\'intégrase.",\n      "diapo": 14\n    },\n    {\n      "question": "Lesquelles sont vraies pour la transcriptase inverse ?",\n      "reponses": ["Pas d\'activité correctrice", "Synthétise de l\'ADN", "Cible du raltégravir"],\n      "correctes": [0, 1],\n      "explication": "Deux vraies : pas de relecture, et ARN vers ADN. Le raltégravir cible l\'intégrase, pas elle.",\n      "diapo": 11\n    },\n    {\n      "question": "Quasi-espèce virale",\n      "reponse": "Population de génomes viraux apparentés mais non identiques.",\n      "diapo": 12\n    }\n  ]\n}';
+
+function startBtn(scope, k, label, n, cls){
+  return '<button class="btn sm '+(cls||'')+'" data-act="start" data-scope="'+scope+'" data-k="'+k+'"'+(n?'':' disabled')+'>'+label+' · '+n+'</button>';
+}
+
+function nodeHTML(f){
+  var kids = S.folders.filter(function(x){ return x.parentId === f.id; });
+  var mine = cardsIn(f.id);
+  var qcm = ofKind(mine, "qcm").length, flash = ofKind(mine, "flash").length;
+  var due = mine.filter(isDue);
+  var flops = mine.filter(function(c){ return c.flop; }).length;
+  var op = !!UI.open[f.id];
+  return '<div class="node">' +
+    '<button class="node-main" data-act="toggle" data-id="'+f.id+'">' +
+      '<span class="chev'+(op?' open':'')+'">&rsaquo;</span>' +
+      '<span class="node-name"><span class="name">'+esc(f.name)+'</span>' +
+        '<span class="meta">'+(flops?'<i class="dot"></i>':'')+
+        qcm+' QCM &middot; '+flash+' flashcard'+(flash>1?'s':'')+
+        (kids.length? ' &middot; '+kids.length+' sous-dossier'+(kids.length>1?'s':'') : '')+'</span></span>' +
+      (due.length? '<span class="badge">'+due.length+' à revoir</span>' : '') +
+    '</button>' +
+    (op ? '<div class="actions">' +
+      startBtn(f.id, "all", "Réviser", mine.length, "primary") +
+      (qcm && flash ? startBtn(f.id, "qcm", "QCM", qcm) + startBtn(f.id, "flash", "Flashcards", flash) : "") +
+      '<button class="btn sm" data-act="read" data-id="'+f.id+'"'+(mine.length?'':' disabled')+'>Lire</button>' +
+      '<div class="sep"></div>' +
+      '<button class="btn sm" data-act="generate" data-id="'+f.id+'">✨ Générer depuis un cours</button>' +
+      '<button class="btn sm" data-act="addcard" data-id="'+f.id+'">＋ Carte</button>' +
+      '<button class="btn sm" data-act="import" data-id="'+f.id+'">Importer</button>' +
+      '<button class="btn sm" data-act="newfolder" data-id="'+f.id+'">＋ Sous-dossier</button>' +
+      '<button class="btn sm ghost" data-act="delfolder" data-id="'+f.id+'">Supprimer</button>' +
+    '</div>' : '') +
+  '</div>' +
+  (op && kids.length ? '<div class="kids">'+kids.map(nodeHTML).join('')+'</div>' : '');
+}
+
+function homeHTML(){
+  var all = S.cards;
+  var due = all.filter(isDue);
+  var unseen = all.filter(function(c){ return !c.seen; });
+  var flops = all.filter(function(c){ return c.flop; });
+  var hard = all.filter(function(c){ return c.seen && c.ease < 1.8; });
+  var daysLeft = daysUntilExam();
+  var dq = ofKind(due, "qcm").length, df = ofKind(due, "flash").length;
+  var roots = S.folders.filter(function(f){ return f.parentId === null; });
+  
+  var examHeader = S.examDate
+    ? '<button data-act="setExamDate" style="display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:14px;background:rgba(0,168,107,.07)">' +
+      '<span class="sub" style="display:block;margin-bottom:4px">Examen · appuie pour modifier</span>' +
+      '<span style="display:block;font-size:18px;font-weight:600">'+(daysLeft === 0 ? "C\'est aujourd\'hui" : daysLeft+' jour'+(daysLeft>1?'s':'')+' restant'+(daysLeft>1?'s':''))+'</span>' +
+      '<span class="sub" style="display:block;margin-top:2px">'+fmtDate(S.examDate)+'</span>' +
+      '</button>' : '';
+
+  function statBox(cat, label, n, color){
+    return '<div style="border:1px solid var(--line);border-radius:12px;padding:11px;background:var(--panel)">' +
+      '<p class="sub">'+label+'</p>' +
+      '<p style="font-size:22px;font-weight:600;margin:4px 0 8px'+(color?';color:'+color:'')+'">'+n+'</p>' +
+      '<div class="row">' +
+      '<button class="btn sm primary" data-act="startcat" data-cat="'+cat+'"'+(n?'':' disabled')+'>Réviser</button>' +
+      '<button class="btn sm" data-act="browse" data-cat="'+cat+'"'+(n?'':' disabled')+'>Voir</button>' +
+      '</div></div>';
+  }
+  var stats = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">' +
+    statBox("unseen", "À apprendre", unseen.length) +
+    statBox("flops", "En erreurs", flops.length, "var(--coral)") +
+    statBox("hard", "Compliquées", hard.length) +
+    statBox("all", "Total", all.length) +
+    '</div>';
+
+  return '<div class="head"><div><h1>Révisions</h1>' +
+      '<p class="sub">'+ofKind(all,"qcm").length+' QCM &middot; '+ofKind(all,"flash").length+' flashcards</p></div></div>' +
+    examHeader + stats +
+    '<div class="hero">' +
+      '<p class="sub" style="margin-bottom:6px">À revoir aujourd\'hui</p>' +
+      '<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">' +
+        '<div><span class="count">'+due.length+'</span><span class="unit">'+(due.length>1?'cartes':'carte')+'</span>' +
+        (flops.length? '<p class="meta" style="margin-top:8px"><i class="dot"></i>'+flops.length+' point'+(flops.length>1?'s':'')+' rouge'+(flops.length>1?'s':'')+'</p>' : '') +
+        '</div>' +
+        '<button class="btn primary" data-act="start" data-scope="due" data-k="all"'+(due.length?'':' disabled')+'>Commencer</button>' +
+      '</div>' +
+      (dq && df ? '<div class="row" style="margin-top:14px">' +
+        '<button class="btn sm" data-act="start" data-scope="due" data-k="qcm">QCM seuls · '+dq+'</button>' +
+        '<button class="btn sm" data-act="start" data-scope="due" data-k="flash">Flashcards seules · '+df+'</button></div>' : '') +
+      (due.length? '' : '<p class="sub" style="margin-top:12px">Tout est à jour. Tu peux relancer une série quand tu veux.</p>') +
+    '</div>' +
+    '<button class="btn wide" data-act="start" data-scope="all" data-k="all" style="margin-bottom:14px"'+(all.length?'':' disabled')+'>↻ Tout revoir ('+all.length+')</button>' +
+    '<div class="row" style="margin-bottom:18px">' +
+      '<button class="btn" data-act="import">Importer (JSON)</button>' +
+      '<button class="btn ghost" data-act="newfolder">＋ Dossier</button>' +
+      '<button class="btn ghost" data-act="setExamDate">🗓 Exam</button>' +
+    '</div>' +
+    (roots.length ? roots.map(nodeHTML).join('') : '<p class="empty">Aucun dossier. Crée-en un, puis ajoute tes cartes.</p>') +
+    '<div class="foot"><button data-act="export">Exporter mes données</button>' +
+    '<button data-act="reset">Réinitialiser</button></div>' +
+    '<p class="hint">Safari → Partager → Sur l\'écran d\'accueil pour l\'utiliser comme une appli.</p>';
+}
+
+/* --------- Lecture --------- */
+function readCardHTML(c){
+  var body = "";
+  if (kindOf(c) === "flash"){
+    body = '<p class="verso serif">'+esc(c.answerText||"")+'</p>';
+  } else {
+    var correctIdx = correctSet(c);
+    body = c.choices.map(function(t, i){
+      return '<p class="line'+(correctIdx.indexOf(i) >= 0 ? ' good' : '')+'">'+esc(t)+'</p>';
+    }).join('');
+  }
+  return '<div class="rc">' +
+    '<p class="q serif">'+esc(c.question)+'</p>' + body +
+    (c.explanation? '<p class="explain" style="margin-top:10px">'+esc(c.explanation)+'</p>' : '') +
+    (c.slide? '<span class="slide">Diapo '+esc(c.slide)+'</span>' : '') +
+    '<div class="rc-foot"><span class="meta">'+(c.flop?'<i class="dot"></i>':'')+dueLabel(c)+'</span>' +
+    '<button class="btn sm ghost" data-act="delcard" data-id="'+c.id+'">Supprimer</button></div></div>';
+}
+function readHTML(){
+  var f = folderById(UI.reading);
+  if (!f) return '<button class="btn" data-act="exitread">Retour</button>';
+  var ids = descendants(f.id);
+  var total = cardsIn(f.id).length;
+  var html = '<button class="btn ghost sm" data-act="exitread" style="margin-bottom:16px">← Accueil</button>' +
+    '<div class="head"><div><h1>'+esc(f.name)+'</h1><p class="sub">'+total+' carte'+(total>1?'s':'')+' en lecture libre</p></div></div>';
+  if (!total) return html + '<p class="empty">Ce dossier est vide.</p>';
+  ids.forEach(function(fid){
+    var list = S.cards.filter(function(c){ return c.folderId === fid; });
+    if (!list.length) return;
+    if (fid !== f.id) html += '<p class="sub" style="margin:18px 0 8px">'+esc((folderById(fid)||{}).name||"")+'</p>';
+    html += list.map(readCardHTML).join('');
+  });
+  return html;
+}
+
+/* --------- Vue par catégorie (à apprendre, erreurs, compliquées) --------- */
+var CAT_LABEL = { unseen:"À apprendre", flops:"En erreurs", hard:"Compliquées", all:"Toutes les cartes" };
+function catCards(cat){
+  if (cat === "unseen") return S.cards.filter(function(c){ return !c.seen; });
+  if (cat === "flops") return S.cards.filter(function(c){ return c.flop; });
+  if (cat === "hard") return S.cards.filter(function(c){ return c.seen && c.ease < 1.8; });
+  return S.cards.slice();
+}
+function folderPath(id){
+  var names = [], cur = folderById(id), guard = 0;
+  while (cur && guard++ < 20){ names.unshift(cur.name); cur = cur.parentId ? folderById(cur.parentId) : null; }
+  return names.join(" › ");
+}
+function browseHTML(){
+  var cat = UI.browse;
+  var full = catCards(cat);
+  var roots = S.folders.filter(function(f){ return f.parentId === null; });
+
+  // onglets : une matière par dossier racine qui contient des cartes de cette catégorie
+  var tabs = roots.map(function(r){
+    var set = {}; descendants(r.id).forEach(function(x){ set[x] = 1; });
+    return { folder:r, n: full.filter(function(c){ return set[c.folderId]; }).length };
+  }).filter(function(t){ return t.n > 0; });
+
+  var active = UI.browseFolder;
+  if (active && !tabs.some(function(t){ return t.folder.id === active; })) active = null;
+
+  var list = full;
+  if (active){
+    var aset = {}; descendants(active).forEach(function(x){ aset[x] = 1; });
+    list = full.filter(function(c){ return aset[c.folderId]; });
+  }
+
+  var html = '<button class="btn ghost sm" data-act="exitbrowse" style="margin-bottom:16px">← Accueil</button>' +
+    '<div class="head"><div><h1>'+CAT_LABEL[cat]+'</h1>' +
+    '<p class="sub">'+list.length+' carte'+(list.length>1?'s':'')+' · '+ofKind(list,"qcm").length+' QCM, '+ofKind(list,"flash").length+' flashcards</p></div></div>';
+
+  if (!full.length) return html + '<p class="empty">Rien dans cette catégorie.</p>';
+
+  if (tabs.length > 1){
+    html += '<div class="tabbar">' +
+      '<button class="'+(active?'':'on')+'" data-act="browsetab" data-id="">Tout · '+full.length+'</button>' +
+      tabs.map(function(t){
+        return '<button class="'+(active===t.folder.id?'on':'')+'" data-act="browsetab" data-id="'+t.folder.id+'">'+esc(t.folder.name)+' · '+t.n+'</button>';
+      }).join('') + '</div>';
+  }
+
+  html += '<button class="btn primary wide" data-act="startcat" data-cat="'+cat+'"'+(active?' data-id="'+active+'"':'')+' style="margin-bottom:18px">Réviser ces '+list.length+' cartes</button>';
+
+  // sections : un bloc par dossier (sous-dossiers compris)
+  var shown = active ? descendants(active) : S.folders.map(function(f){ return f.id; });
+  shown.forEach(function(fid){
+    var f = folderById(fid); if (!f) return;
+    var mine = list.filter(function(c){ return c.folderId === fid; });
+    if (!mine.length) return;
+    var q = ofKind(mine,"qcm").length, fl = ofKind(mine,"flash").length;
+    html += '<div style="margin:22px 0 10px">' +
+      '<p style="font-weight:600">'+esc(folderPath(fid))+'</p>' +
+      '<p class="sub" style="margin-bottom:8px">'+q+' QCM · '+fl+' flashcard'+(fl>1?'s':'')+'</p>' +
+      '<div class="row">' +
+      '<button class="btn sm primary" data-act="startcat" data-cat="'+cat+'" data-id="'+fid+'">Réviser · '+mine.length+'</button>' +
+      (q && fl ? '<button class="btn sm" data-act="startcat" data-cat="'+cat+'" data-id="'+fid+'" data-k="qcm">QCM · '+q+'</button>' +
+        '<button class="btn sm" data-act="startcat" data-cat="'+cat+'" data-id="'+fid+'" data-k="flash">Flashcards · '+fl+'</button>' : '') +
+      '</div></div>' +
+      mine.map(readCardHTML).join('');
+  });
+  return html;
+}
+
+/* --------- Quiz --------- */
+function gradesHTML(c, wrong){
+  return '<div class="grades">' + GRADES.map(function(g){
+    var days = applyGrade(c, g.key, wrong).interval;
+    return '<button class="grade'+(wrong && g.key==="fail" ? ' suggest' : '')+'" data-act="grade" data-g="'+g.key+'">' +
+      g.label+'<small>'+fmtDays(days)+'</small></button>';
+  }).join('') + '</div>';
+}
+
+function isMulti(c){ return Array.isArray(c.answers); }
+function correctSet(c){ return isMulti(c) ? c.answers : [c.answer]; }
+
+function quizHTML(){
+  var s = UI.session;
+  if (s.idx >= s.ids.length){
+    var missed = s.missed.map(byId).filter(Boolean);
+    return '<button class="btn ghost sm" data-act="exit" style="margin-bottom:20px">← Accueil</button>' +
+      '<div class="hero"><p class="sub" style="margin-bottom:6px">'+esc(s.title)+' — terminé</p>' +
+      '<span class="count">'+s.right+'</span><span class="unit">réussies sur '+s.ids.length+'</span>' +
+      (missed.length? '<p class="meta" style="margin-top:10px"><i class="dot"></i>'+missed.length+' carte'+(missed.length>1?'s':'')+' en point rouge</p>' : '') +
+      '</div><div class="row">' +
+      (missed.length? '<button class="btn primary" data-act="replayMissed">↻ Rejouer les ratées ('+missed.length+')</button>' : '') +
+      '<button class="btn" data-act="replayAll">Refaire toute la série</button></div>';
+  }
+  var c = byId(s.ids[s.idx]);
+  if (!c) return '<p class="empty">Cette carte n\'existe plus.</p><button class="btn" data-act="exit">Retour</button>';
+  var flash = kindOf(c) === "flash";
+  var multi = !flash && isMulti(c);
+  var revealed = flash ? (s.sel !== null) : (multi ? !!s.validated : s.sel !== null);
+  var wrong = false;
+  if (!flash && revealed){
+    if (multi){
+      var chosen = (s.picked || []).slice().sort();
+      var correct = correctSet(c).slice().sort();
+      wrong = chosen.length !== correct.length || chosen.some(function(v,i){ return v !== correct[i]; });
+    } else {
+      wrong = s.sel !== c.answer;
+    }
+  }
+
+  var html = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">' +
+      '<button class="btn ghost sm" data-act="exit">←</button>' +
+      '<p style="flex:1;min-width:0;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(s.title)+'</p>' +
+      '<span class="kind">'+(flash?'Flashcard':(multi?'QCM · plusieurs bonnes réponses':'QCM'))+'</span>' +
+      '<span class="sub">'+(s.idx+1)+'/'+s.ids.length+'</span></div>' +
+    '<div class="progress"><i style="width:'+((s.idx/s.ids.length)*100)+'%"></i></div>' +
+    '<p class="question serif">'+esc(c.question)+'</p>';
+
+  if (flash){
+    if (!revealed){
+      html += '<button class="btn wide" data-act="reveal">Afficher la réponse</button>';
+    } else {
+      html += '<div class="feedback">' +
+        '<p class="verso serif">'+esc(c.answerText||"")+'</p>' +
+        (c.explanation? '<p class="explain">'+esc(c.explanation)+'</p>' : '') +
+        (c.slide? '<span class="slide">Diapo '+esc(c.slide)+'</span>' : '') + '</div>' +
+        gradesHTML(c, false);
+    }
+    return html;
+  }
+
+  if (multi){
+    var picked = s.picked || [];
+    var correctIdx = correctSet(c);
+    c.choices.forEach(function(txt, i){
+      var isChecked = picked.indexOf(i) >= 0;
+      var cls = "choice";
+      if (revealed){
+        if (correctIdx.indexOf(i) >= 0) cls += " right";
+        else if (isChecked) cls += " wrong";
+        else cls += " dim";
+      }
+      var key = revealed
+        ? (correctIdx.indexOf(i) >= 0 ? "✓" : (isChecked ? "✕" : String.fromCharCode(65+i)))
+        : (isChecked ? "✓" : String.fromCharCode(65+i));
+      html += '<button class="'+cls+'" data-act="togglePick" data-i="'+i+'"'+(revealed?' disabled':'')+'>' +
+        '<span class="key">'+key+'</span><span>'+esc(txt)+'</span></button>';
+      if (revealed && c.optionExplain && c.optionExplain[i]){
+        html += '<p class="explain" style="margin:-4px 0 10px 33px;font-size:13px">'+esc(c.optionExplain[i])+'</p>';
+      }
+    });
+    if (!revealed){
+      html += '<button class="btn primary wide" data-act="validateMulti"'+(picked.length?'':' disabled')+' style="margin-top:8px">Valider</button>';
+    } else {
+      html += '<div class="feedback" style="border-color:'+(wrong?'rgba(242,99,126,.45)':'rgba(63,217,164,.45)')+'">' +
+        '<p class="verdict" style="color:'+(wrong?'var(--coral)':'var(--mint)')+'">'+(wrong?'✕ Incomplet ou faux':'✓ Juste')+'</p>' +
+        (c.explanation? '<p class="explain">'+esc(c.explanation)+'</p>' : '') +
+        (c.slide? '<span class="slide">Diapo '+esc(c.slide)+'</span>' : '') + '</div>' +
+        gradesHTML(c, wrong);
+    }
+    return html;
+  }
+
+  c.choices.forEach(function(txt, i){
+    var cls = "choice";
+    if (revealed){
+      if (i === c.answer) cls += " right";
+      else if (i === s.sel) cls += " wrong";
+      else cls += " dim";
+    }
+    var key = revealed && i === c.answer ? "✓" : (revealed && i === s.sel ? "✕" : String.fromCharCode(65+i));
+    html += '<button class="'+cls+'" data-act="answer" data-i="'+i+'"'+(revealed?' disabled':'')+'>' +
+      '<span class="key">'+key+'</span><span>'+esc(txt)+'</span></button>';
+  });
+  if (revealed){
+    html += '<div class="feedback" style="border-color:'+(wrong?'rgba(242,99,126,.45)':'rgba(63,217,164,.45)')+'">' +
+      '<p class="verdict" style="color:'+(wrong?'var(--coral)':'var(--mint)')+'">'+(wrong?'✕ Faux':'✓ Juste')+'</p>' +
+      (c.explanation? '<p class="explain">'+esc(c.explanation)+'</p>' : '') +
+      (c.slide? '<span class="slide">Diapo '+esc(c.slide)+'</span>' : '') + '</div>' +
+      gradesHTML(c, wrong);
+  }
+  return html;
+}
+
+/* --------- Génération depuis un cours (appel Claude) --------- */
+async function callClaude(payload){
+  var res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error("Le service a répondu une erreur (" + res.status + ").");
+  var data = await res.json();
+  return (data.content || []).map(function(b){ return b.type === "text" ? b.text : ""; }).join("\n");
+}
+
+function genParse(text){
+  var clean = text.replace(/```json/gi, "").replace(/```/g, "").trim();
+  var obj;
+  try { obj = JSON.parse(clean); }
+  catch (e){
+    var s = clean.indexOf("{"), a = clean.indexOf("[");
+    var start = (s >= 0 && (a < 0 || s < a)) ? s : a;
+    var end = Math.max(clean.lastIndexOf("}"), clean.lastIndexOf("]"));
+    if (start < 0 || end < 0) throw new Error("Réponse illisible, réessaie.");
+    obj = JSON.parse(clean.slice(start, end + 1));
+  }
+  var list = Array.isArray(obj) ? obj : (obj.questions || obj.qcm || obj.cards || obj.flashcards || []);
+  return list.map(normalizeQ).filter(Boolean);
+}
+
+var GEN_SYSTEM = "Tu transformes un support de cours de médecine en questions de révision. " +
+  "Réponds UNIQUEMENT par du JSON valide, sans texte autour, sans balises de code. " +
+  "Schéma : {\"questions\":[" +
+  "{\"question\":\"...\",\"reponses\":[\"...\",\"...\",\"...\",\"...\"],\"correcte\":0,\"explication\":\"...\",\"diapo\":\"...\"}," +
+  "{\"question\":\"...\",\"reponses\":[\"...\",\"...\",\"...\",\"...\"],\"correctes\":[0,2],\"explication\":\"...\",\"diapo\":\"...\"}," +
+  "{\"question\":\"...\",\"reponse\":\"...\",\"diapo\":\"...\"}" +
+  "]}. Utilise reponses+correcte (un seul index) pour un QCM classique à une bonne réponse ; " +
+  "reponses+correctes (tableau d'index, 2 à 4 valeurs) pour un QCM où plusieurs propositions sont vraies — " +
+  "utilise ce format dès que la notion s'y prête naturellement (ex: \"lesquelles de ces affirmations sont exactes ?\"), pas seulement à une bonne réponse par défaut ; " +
+  "reponse seul pour une flashcard (à réserver aux notions qui se prêtent mal à un choix multiple). " +
+  "explication : une phrase courte et concrète sur le pourquoi ou le mécanisme, jamais un résumé de cours. " +
+  "diapo : le numéro visible sur le document ; omets ce champ si tu ne peux pas le déterminer avec certitude. " +
+  "Si une liste de questions déjà utilisées t'est fournie, ne les répète jamais, même reformulées : couvre d'autres notions du même cours. " +
+  "Retourne exactement le nombre de questions demandé.";
+
+function buildGenPayload(d, mix, want, avoidList){
+  var blocks = [];
+  if (d.file){
+    blocks.push({
+      type: d.file.kind === "pdf" ? "document" : "image",
+      source: { type: "base64", media_type: d.file.mediaType, data: d.file.data }
+    });
+  }
+  var hint = mix === "qcm" ? "Uniquement des QCM à 4 propositions."
+    : mix === "flash" ? "Uniquement des flashcards (question ouverte, réponse concise)."
+    : "Choisis toi-même QCM ou flashcard selon ce qui convient le mieux à chaque notion.";
+  var avoidTxt = avoidList.length
+    ? "\n\nQuestions déjà utilisées pour ce cours, à ne pas répéter ni reformuler à l'identique :\n- " + avoidList.slice(-60).join("\n- ")
+    : "";
+  var instr = "Génère " + want + " nouvelle" + (want > 1 ? "s" : "") + " question" + (want > 1 ? "s" : "") +
+    " de révision à partir de ce cours. " + hint +
+    (d.text.trim() ? "\n\nTexte du cours :\n" + d.text.trim() : "") + avoidTxt;
+  blocks.push({ type: "text", text: instr });
+  return { model: "claude-sonnet-4-6", max_tokens: 1000, system: GEN_SYSTEM, messages: [{ role: "user", content: blocks }] };
+}
+
+async function runGenerate(){
+  var m = UI.modal, d = m.draft;
+  if (!d.text.trim() && !d.file){ alert("Colle du texte ou joins un fichier."); return; }
+  var target = Math.max(1, Math.min(60, m.count || 8));
+  var batchSize = 8;
+  var totalBatches = Math.ceil(target / batchSize);
+  var collected = [];
+  var existing = cardsIn(m.folderId).map(function(c){ return c.question; });
+  var softError = null;
+
+  m.status = "loading"; m.progress = { done: 0, total: totalBatches }; m.error = null;
+  render();
+
+  for (var i = 0; i < totalBatches; i++){
+    var want = Math.min(batchSize, target - collected.length);
+    if (want <= 0) break;
+    try {
+      var avoid = existing.concat(collected.map(function(c){ return c.question; }));
+      var text = await callClaude(buildGenPayload(d, m.mix, want, avoid));
+      collected = collected.concat(genParse(text));
+    } catch (err){
+      softError = (err && err.message) ? err.message : "Échec de la génération.";
+      break;
+    }
+    m.progress = { done: i + 1, total: totalBatches };
+    render();
+  }
+
+  var folder = folderById(m.folderId);
+  if (folder && d.text.trim()){ folder.lastCourseText = d.text.trim(); save(); }
+
+  if (!collected.length){
+    m.status = "error";
+    m.error = softError || "Aucune question exploitable dans la réponse.";
+  } else {
+    collected.forEach(function(c){ c.include = true; });
+    m.status = "preview"; m.candidates = collected;
+    m.error = softError ? ("Génération partielle : " + softError) : null;
+  }
+  render();
+}
+
+function readGenForm(){
+  if (!UI.modal || UI.modal.type !== "generate") return;
+  var t = document.getElementById("gtext");
+  if (t) UI.modal.draft.text = t.value;
+  var c = document.getElementById("gcount");
+  if (c && c.value !== "") UI.modal.count = Math.max(3, Math.min(60, Number(c.value) || UI.modal.count));
+}
+
+function generateFormHTML(m){
+  var d = m.draft;
+  return '<p class="sub" style="margin:6px 0 12px">Colle le texte du cours, ou joins le PDF des diapos (un fichier à la fois — images comprises). ' +
+      'Disponible ici, dans Claude ; pas dans la version installée sur l\'écran d\'accueil.</p>' +
+    '<div class="tabs" style="margin-bottom:12px">' +
+      '<button class="'+(m.mix==="mixte"?"on":"")+'" data-act="genmix" data-m="mixte">Au choix</button>' +
+      '<button class="'+(m.mix==="qcm"?"on":"")+'" data-act="genmix" data-m="qcm">QCM</button>' +
+      '<button class="'+(m.mix==="flash"?"on":"")+'" data-act="genmix" data-m="flash">Flashcards</button></div>' +
+    '<div class="field"><label>Texte du cours (facultatif si tu joins un fichier)</label>' +
+    '<textarea class="ta" id="gtext" style="min-height:120px">'+esc(d.text||"")+'</textarea></div>' +
+    '<button class="btn" data-act="pickgenfile" style="margin-bottom:10px">'+(d.file? "Fichier : "+esc(d.file.name) : "Joindre un PDF ou une image")+'</button>' +
+    '<div class="field"><label>Nombre de questions</label><div class="row" style="margin-bottom:8px">' +
+      [10,20,30,50].map(function(n){ return '<button class="btn sm'+(m.count===n?' primary':'')+'" data-act="gencount" data-n="'+n+'">'+n+'</button>'; }).join('') +
+    '</div><input class="inp" id="gcount" type="number" inputmode="numeric" min="3" max="60" value="'+m.count+'" style="max-width:110px"></div>' +
+    '<p class="hint" style="margin:10px 0 14px">Au-delà de 8, Claude génère par lots automatiquement — compte environ 15 s par lot de 8. ' +
+    'Pour un cours de 100 diapos, fais-le par blocs (par ex. diapos 1 à 30) pour de meilleurs résultats.</p>' +
+    '<button class="btn primary wide" data-act="rungen">Générer</button>';
+}
+
+function generateHTML(m){
+  if (m.status === "loading"){
+    var p = m.progress;
+    var sub = p && p.total > 1
+      ? "Lot " + (p.done + 1) + " / " + p.total + " — " + (p.done * 8) + " question" + (p.done===1?"":"s") + " déjà générée" + (p.done===1?"":"s")
+      : "Claude lit le cours et rédige les questions.";
+    return '<h2 style="display:flex;align-items:center;gap:9px"><span class="spin"></span> Génération en cours…</h2>' +
+      '<p class="sub" style="margin-top:8px">'+esc(sub)+'</p>';
+  }
+  if (m.status === "preview"){
+    var n = m.candidates.filter(function(c){ return c.include; }).length;
+    var warn = m.error ? '<p class="err">'+esc(m.error)+'</p>' : '';
+    return '<h2>'+m.candidates.length+' question'+(m.candidates.length>1?'s':'')+' proposée'+(m.candidates.length>1?'s':'')+'</h2>' +
+      warn +
+      '<p class="sub" style="margin:6px 0 12px">Décoche ce que tu ne veux pas garder.</p>' +
+      m.candidates.map(function(c, i){
+        return '<div class="cand"><label>' +
+          '<input type="checkbox" data-act="toggleCand" data-i="'+i+'"'+(c.include?' checked':'')+'>' +
+          '<span><span class="kind" style="margin-right:6px">'+(c.type==="flash"?"Flashcard":"QCM")+'</span>' +
+          esc(c.question) + (c.slide? ' <span class="sub">— diapo '+esc(c.slide)+'</span>' : '') +
+          '</span></label></div>';
+      }).join('') +
+      '<div class="row" style="margin-top:14px">' +
+      '<button class="btn primary" data-act="commitGenerate"'+(n?'':' disabled')+'>Ajouter '+n+' carte'+(n>1?'s':'')+'</button>' +
+      '<button class="btn ghost" data-act="regenerate">Recommencer</button></div>';
+  }
+  var errHtml = m.status === "error" ? '<p class="err">'+esc(m.error)+'</p>' : '';
+  return '<h2>Générer depuis un cours</h2>' + errHtml + generateFormHTML(m);
+}
+
+/* --------- Modales --------- */
+function cardFormHTML(m){
+  var d = m.draft;
+  var seg = '<div class="tabs" style="margin-bottom:14px">' +
+    '<button class="'+(m.kind==="qcm"?"on":"")+'" data-act="cardkind" data-k="qcm">QCM</button>' +
+    '<button class="'+(m.kind==="flash"?"on":"")+'" data-act="cardkind" data-k="flash">Flashcard</button></div>';
+  var body;
+  if (m.kind === "qcm"){
+    var opts = "";
+    var multiMode = !!d.multi;
+    for (var i=0;i<4;i++){
+      var inputTag = multiMode
+        ? '<input type="checkbox" data-multicor="'+i+'"'+((d.cors||[]).indexOf(i)>=0?' checked':'')+'>'
+        : '<input type="radio" name="cor" value="'+i+'"'+(d.cor===i?' checked':'')+'>';
+      opts += '<div class="opt">'+inputTag+
+        '<input class="inp" id="ch'+i+'" placeholder="Réponse '+String.fromCharCode(65+i)+'" value="'+esc(d.ch[i]||"")+'"></div>';
+    }
+    body = '<div class="field"><label>Question</label><textarea class="ta" id="q">'+esc(d.q||"")+'</textarea></div>' +
+      '<label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:13.5px">' +
+      '<input type="checkbox" id="multitoggle" data-act="togglemulti" style="width:17px;height:17px;accent-color:var(--mint)"'+(multiMode?' checked':'')+'>' +
+      'Plusieurs bonnes réponses possibles</label>' +
+      '<div class="field"><label>Réponses — coche '+(multiMode?'les bonnes':'la bonne')+'</label>'+opts+'</div>' +
+      '<div class="field"><label>Explication courte</label><textarea class="ta" id="ex" style="min-height:70px">'+esc(d.ex||"")+'</textarea></div>';
+  } else {
+    body = '<div class="field"><label>Recto</label><textarea class="ta" id="q" style="min-height:70px">'+esc(d.q||"")+'</textarea></div>' +
+      '<div class="field"><label>Verso</label><textarea class="ta" id="verso">'+esc(d.verso||"")+'</textarea></div>' +
+      '<div class="field"><label>Note complémentaire (facultatif)</label><textarea class="ta" id="ex" style="min-height:60px">'+esc(d.ex||"")+'</textarea></div>';
+  }
+  return '<h2>Ajouter une carte</h2>' +
+    '<p class="sub" style="margin:6px 0 12px">Dans « '+esc((folderById(m.folderId)||{}).name||"")+' »</p>' +
+    seg + body +
+    '<div class="field"><label>Numéro de diapo</label><input class="inp" id="sl" inputmode="numeric" value="'+esc(d.sl||"")+'"></div>' +
+    '<button class="btn primary" data-act="savecard">Ajouter</button>';
+}
+
+function modalHTML(){
+  var m = UI.modal;
+  if (!m) return '';
+  var inner = '';
+  if (m.type === "import"){
+    var fname = m.folderId ? (folderById(m.folderId)||{}).name : null;
+    inner = '<h2>Importer</h2>' +
+      '<p class="sub" style="margin:6px 0 14px">'+(fname ? 'Les cartes iront dans « '+esc(fname)+' ».' : 'Le champ « dossier » crée l\'arborescence automatiquement.')+' Une entrée avec « reponses » devient un QCM, avec « reponse » une flashcard.</p>' +
+      '<button class="btn" data-act="pickfile" style="margin-bottom:12px">Choisir un fichier .json</button>' +
+      '<textarea class="ta mono" id="ta" spellcheck="false" placeholder="'+esc(SAMPLE)+'"></textarea>' +
+      '<div class="row" style="margin-top:12px">' +
+        '<button class="btn primary" data-act="doimport">Importer</button>' +
+        '<button class="btn ghost" data-act="sample">Coller un exemple</button></div>';
+  } else if (m.type === "folder"){
+    inner = '<h2>'+(m.folderId ? 'Nouveau sous-dossier' : 'Nouveau dossier')+'</h2>' +
+      '<input class="inp" id="nm" placeholder="Nom du dossier" style="margin:12px 0">' +
+      '<button class="btn primary" data-act="createfolder">Créer</button>';
+  } else if (m.type === "card"){
+    inner = cardFormHTML(m);
+  } else if (m.type === "generate"){
+    inner = generateHTML(m);
+  } else if (m.type === "examdate"){
+    var d = new Date(S.examDate || new Date());
+    var year = d.getFullYear(), month = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+    inner = '<h2>Date d\'examen</h2>' +
+      '<p class="sub" style="margin:6px 0 12px">L\'algorithme de révision s\'adaptera à cette date.</p>' +
+      '<input class="inp" type="date" id="ed" value="'+year+'-'+month+'-'+day+'" style="margin-bottom:14px">' +
+      '<button class="btn primary" data-act="saveExamDate">Enregistrer</button>';
+  } else if (m.type === "export"){
+    inner = '<h2>Exporter mes données</h2>' +
+      '<p class="sub" style="margin:6px 0 12px">Copie ce texte pour garder une sauvegarde de tes dossiers et de ton planning.</p>' +
+      '<textarea class="ta mono" id="ta" readonly>'+esc(JSON.stringify(S))+'</textarea>';
+  }
+  return '<div class="modal-bg" data-act="closebg"><div class="modal">'+inner+
+    '<button class="btn ghost sm" data-act="close" style="margin-top:14px">Fermer</button></div></div>';
+}
+
+function render(){
+  var main = UI.session ? quizHTML()
+    : UI.browse ? browseHTML()
+    : UI.reading ? readHTML()
+    : homeHTML();
+  document.getElementById("app").innerHTML = '<div class="wrap">' + main + '</div>' + modalHTML();
+  var nm = document.getElementById("nm");
+  if (nm) nm.focus();
+}
+
+/* ---------------- Actions ---------------- */
+function val(id){ var el = document.getElementById(id); return el ? el.value : ""; }
+function readCardForm(){
+  var m = UI.modal, d = m.draft;
+  d.q = val("q"); d.ex = val("ex"); d.sl = val("sl");
+  if (m.kind === "qcm"){
+    d.ch = [val("ch0"), val("ch1"), val("ch2"), val("ch3")];
+    var mt = document.getElementById("multitoggle");
+    if (mt) d.multi = mt.checked;
+    if (d.multi){
+      var cors = [];
+      document.querySelectorAll('[data-multicor]').forEach(function(box){
+        if (box.checked) cors.push(Number(box.dataset.multicor));
+      });
+      d.cors = cors;
+    } else {
+      var r = document.querySelector('input[name=cor]:checked');
+      d.cor = r ? Number(r.value) : 0;
+    }
+  } else { d.verso = val("verso"); }
+}
+
+document.addEventListener("click", function(e){
+  var el = e.target.closest("[data-act]");
+  if (!el) return;
+  var act = el.dataset.act, id = el.dataset.id;
+
+  if (act === "toggle"){ UI.open[id] = !UI.open[id]; render(); }
+  else if (act === "start"){
+    var scope = el.dataset.scope, k = el.dataset.k, list, title;
+    if (scope === "due"){
+      list = ofKind(S.cards.filter(isDue), k);
+      title = "Révision du jour";
+      startSession(list, title);
+    } else if (scope === "all"){
+      startSession(ofKind(S.cards, k), "Tout revoir");
+    } else {
+      var f = folderById(scope);
+      list = ofKind(cardsIn(scope), k);
+      var due = list.filter(isDue), rest = list.filter(function(c){ return !isDue(c); });
+      startSession(shuffle(due).concat(shuffle(rest)), f.name + (k === "all" ? "" : k === "qcm" ? " — QCM" : " — flashcards"), true);
+    }
+  }
+  else if (act === "read"){ UI.reading = id; render(); window.scrollTo(0,0); }
+  else if (act === "browse"){ UI.browse = el.dataset.cat; UI.browseFolder = null; render(); window.scrollTo(0,0); }
+  else if (act === "browsetab"){ UI.browseFolder = id || null; render(); window.scrollTo(0,0); }
+  else if (act === "exitbrowse"){ UI.browse = null; UI.browseFolder = null; render(); }
+  else if (act === "startcat"){
+    var cat = el.dataset.cat, k = el.dataset.k || "all";
+    var list = catCards(cat);
+    var title = CAT_LABEL[cat];
+    if (id){
+      var set = {}; descendants(id).forEach(function(x){ set[x] = 1; });
+      list = list.filter(function(c){ return set[c.folderId]; });
+      title = (folderById(id)||{}).name + " — " + CAT_LABEL[cat];
+    }
+    list = ofKind(list, k);
+    startSession(list, title);
+  }
+  else if (act === "exitread"){ UI.reading = null; render(); }
+  else if (act === "delcard"){
+    if (confirm("Supprimer cette carte ?")){
+      S.cards = S.cards.filter(function(c){ return c.id !== id; });
+      save(); render();
+    }
+  }
+  else if (act === "import"){ UI.modal = { type:"import", folderId:id || null }; render(); }
+  else if (act === "newfolder"){ UI.modal = { type:"folder", folderId:id || null }; render(); }
+  else if (act === "generate"){
+    var gf = folderById(id);
+    UI.modal = { type:"generate", folderId:id, status:"idle", mix:"mixte", count:10,
+      draft:{ text:(gf && gf.lastCourseText) || "", file:null }, candidates:[], error:null };
+    render();
+  }
+  else if (act === "genmix"){ readGenForm(); UI.modal.mix = el.dataset.m; render(); }
+  else if (act === "gencount"){ readGenForm(); UI.modal.count = Number(el.dataset.n); render(); }
+  else if (act === "pickgenfile"){ readGenForm(); document.getElementById("genfile").click(); }
+  else if (act === "rungen"){ readGenForm(); runGenerate(); }
+  else if (act === "toggleCand"){ UI.modal.candidates[Number(el.dataset.i)].include = el.checked; render(); }
+  else if (act === "regenerate"){ UI.modal.status = "idle"; UI.modal.candidates = []; render(); }
+  else if (act === "commitGenerate"){
+    var gm = UI.modal;
+    var added = 0;
+    gm.candidates.forEach(function(c){
+      if (!c.include) return;
+      c.folderId = gm.folderId; S.cards.push(c); added++;
+    });
+    UI.open[gm.folderId] = true; UI.modal = null; save(); render();
+  }
+  else if (act === "addcard"){
+    UI.modal = { type:"card", folderId:id, kind:"qcm", draft:{ q:"", ch:["","","",""], cor:0, cors:[], multi:false, ex:"", sl:"", verso:"" } };
+    render();
+  }
+  else if (act === "cardkind"){ readCardForm(); UI.modal.kind = el.dataset.k; render(); }
+  else if (act === "togglemulti"){ readCardForm(); render(); }
+  else if (act === "savecard"){
+    readCardForm();
+    var m = UI.modal, d = m.draft;
+    if (!d.q.trim()){ alert("Il manque la question."); return; }
+    var c = fresh(); c.id = uid(); c.folderId = m.folderId;
+    c.question = d.q.trim(); c.explanation = d.ex.trim(); c.slide = d.sl.trim();
+    if (m.kind === "qcm"){
+      var keptTexts = [], keepMap = [];
+      d.ch.forEach(function(t, i){ if (t.trim()){ keepMap.push(i); keptTexts.push(t.trim()); } });
+      if (keptTexts.length < 2){ alert("Il faut au moins deux réponses."); return; }
+      c.type = "qcm"; c.choices = keptTexts;
+      if (d.multi){
+        var newIdx = (d.cors||[]).map(function(orig){ return keepMap.indexOf(orig); }).filter(function(n){ return n >= 0; });
+        if (!newIdx.length){ alert("Coche au moins une bonne réponse."); return; }
+        c.answers = newIdx;
+      } else {
+        var cor = Math.max(0, keepMap.indexOf(d.cor));
+        c.answer = cor;
+      }
+    } else {
+      if (!d.verso.trim()){ alert("Il manque le verso."); return; }
+      c.type = "flash"; c.answerText = d.verso.trim();
+    }
+    S.cards.push(c); UI.open[m.folderId] = true; UI.modal = null; save(); render();
+  }
+  else if (act === "delfolder"){
+    var f3 = folderById(id);
+    if (confirm("Supprimer « "+f3.name+" » et son contenu ?")){
+      var set = {}; descendants(id).forEach(function(i){ set[i]=1; });
+      S.folders = S.folders.filter(function(x){ return !set[x.id]; });
+      S.cards = S.cards.filter(function(c){ return !set[c.folderId]; });
+      if (UI.reading && set[UI.reading]) UI.reading = null;
+      save(); render();
+    }
+  }
+  else if (act === "createfolder"){
+    var v = (val("nm")||"").trim();
+    if (!v) return;
+    S.folders.push({ id:uid(), name:v, parentId: UI.modal.folderId || null });
+    if (UI.modal.folderId) UI.open[UI.modal.folderId] = true;
+    UI.modal = null; save(); render();
+  }
+  else if (act === "pickfile"){ document.getElementById("file").click(); }
+  else if (act === "sample"){ document.getElementById("ta").value = SAMPLE; }
+  else if (act === "doimport"){ runImport(val("ta")); }
+  else if (act === "export"){ UI.modal = { type:"export" }; render(); }
+  else if (act === "setExamDate"){ UI.modal = { type:"examdate" }; render(); setTimeout(function(){ var e = document.getElementById("ed"); if (e) e.focus(); }, 50); }
+  else if (act === "saveExamDate"){
+    var v = document.getElementById("ed").value;
+    if (!v) return;
+    S.examDate = new Date(v + "T00:00:00").getTime(); 
+    UI.modal = null; save(); render();
+  }
+  else if (act === "reset"){ if (confirm("Effacer toutes tes cartes et revenir aux exemples ?")){ S = seed(); save(); render(); } }
+  else if (act === "close"){ UI.modal = null; render(); }
+  else if (act === "closebg"){ if (e.target.classList.contains("modal-bg")){ UI.modal = null; render(); } }
+  else if (act === "exit"){ UI.session = null; save(); render(); }
+  else if (act === "answer"){ if (UI.session.sel === null){ UI.session.sel = Number(el.dataset.i); render(); } }
+  else if (act === "togglePick"){
+    var s2 = UI.session;
+    if (s2.validated) return;
+    var picked = s2.picked || (s2.picked = []);
+    var iv = Number(el.dataset.i);
+    var pos = picked.indexOf(iv);
+    if (pos >= 0) picked.splice(pos, 1); else picked.push(iv);
+    render();
+  }
+  else if (act === "validateMulti"){ UI.session.validated = true; render(); }
+  else if (act === "reveal"){ UI.session.sel = -1; render(); }
+  else if (act === "grade"){ gradeCurrent(el.dataset.g); }
+  else if (act === "replayMissed"){ startSession(UI.session.missed.map(byId).filter(Boolean), "Les ratées — "+UI.session.title); }
+  else if (act === "replayAll"){ startSession(UI.session.ids.map(byId).filter(Boolean), UI.session.title); }
+});
+
+function gradeCurrent(g){
+  var s = UI.session, card = byId(s.ids[s.idx]);
+  var wrong;
+  if (kindOf(card) === "flash"){
+    wrong = (g === "fail");
+  } else if (isMulti(card)){
+    var chosen = (s.picked || []).slice().sort();
+    var correct = correctSet(card).slice().sort();
+    wrong = chosen.length !== correct.length || chosen.some(function(v,i){ return v !== correct[i]; });
+  } else {
+    wrong = s.sel !== card.answer;
+  }
+  var updated = applyGrade(card, g, wrong);
+  for (var i=0;i<S.cards.length;i++) if (S.cards[i].id === card.id) S.cards[i] = updated;
+
+  if (!wrong) s.right += 1;
+  if (wrong && s.missed.indexOf(card.id) === -1) s.missed.push(card.id);
+  if (g === "fail") s.ids.splice(Math.min(s.idx + 4, s.ids.length), 0, card.id);
+
+  s.idx += 1; s.sel = null; s.picked = []; s.validated = false;
+  save(); render(); window.scrollTo(0,0);
+}
+
+document.getElementById("file").addEventListener("change", function(e){
+  var f = e.target.files[0]; if (!f) return;
+  var r = new FileReader();
+  r.onload = function(){ runImport(String(r.result)); };
+  r.onerror = function(){ alert("Impossible de lire ce fichier."); };
+  r.readAsText(f);
+  e.target.value = "";
+});
+
+document.getElementById("genfile").addEventListener("change", function(e){
+  var f = e.target.files[0]; if (!f) return;
+  var isPdf = f.type === "application/pdf";
+  var isImg = f.type.indexOf("image/") === 0;
+  if (!isPdf && !isImg){ alert("Choisis un PDF ou une image."); e.target.value = ""; return; }
+  var reader = new FileReader();
+  reader.onload = function(){
+    var res = String(reader.result);
+    var data = res.slice(res.indexOf(",") + 1);
+    if (UI.modal){
+      UI.modal.draft.file = { kind: isPdf ? "pdf" : "image", mediaType: f.type, data: data, name: f.name };
+      render();
+    }
+  };
+  reader.onerror = function(){ alert("Impossible de lire ce fichier."); };
+  reader.readAsDataURL(f);
+  e.target.value = "";
+});
+
+function runImport(text){
+  if (!text || !text.trim()) return;
+  try {
+    var n = doImport(text, UI.modal ? UI.modal.folderId : null);
+    UI.modal = null; save(); render();
+    alert(n + (n>1 ? " cartes importées." : " carte importée."));
+  } catch(err){
+    alert("JSON invalide : " + err.message);
+  }
+}
+
+document.addEventListener("keydown", function(e){
+  if (e.key === "Escape" && UI.modal){ UI.modal = null; render(); }
+});
+
+render();
+</script>
+</body>
+</html>
